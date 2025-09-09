@@ -1,10 +1,6 @@
-const { neon, neonConfig } = require('@vercel/postgres');
+import { neon } from '@neondatabase/serverless';
 
-// Configure neon
-neonConfig.fetchConnectionCache = true;
-
-module.exports = async function handler(req, res) {
-  // Handle CORS for frontend requests
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -22,7 +18,6 @@ module.exports = async function handler(req, res) {
   const { name, email, message } = req.body;
 
   try {
-    // Create the sql client using neon
     const sql = neon(process.env.DATABASE_URL);
     
     // Create table if not exists
