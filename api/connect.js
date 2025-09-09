@@ -1,44 +1,45 @@
-import { Sequelize, DataTypes } from 'sequelize';
-const isProduction = process.env.NODE_ENV === 'production';
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  protocol: 'postgres',
-  dialectOptions: isProduction ? {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  } : {},
-  logging: false,
-});
+const { sql } = require('@vercel/postgres');
 
-const Connect = sequelize.define('Connect', {
-  name: DataTypes.STRING,
-  email: DataTypes.STRING,
-  message: DataTypes.TEXT,
-}, {
-  tableName: 'connects',
-  timestamps: true,  // or true if you have createdAt, updatedAt
-});
+module.exports = async function handler(req, res) {
+  // Handle CORS for frontend requests
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-async function connectDB() {
-  try {
-    await sequelize.authenticate();
-  } catch (error) {
-    console.error('Unable to connect to DB:', error);
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-}
 
-export default async function handler(req, res) {
-  await connectDB();
-    console.log(res, "res")
-    const { name, email, message } = req.body;
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
 
-    try {
-        await Connect.sync(); // creates table if not exists
-        await Connect.create({ name, email, message });
-        res.status(200).json({ message: 'Form submitted successfully!' });
-    } catch (error) {
-        res.status(500).json({ error: 'Database error: ' + error.message });
-    }
+  const { name, email, message } = req.body;
+
+  try {
+    // Create table if not exists
+    await sql`
+      CREATE TABLE IF NOT EXISTS connects (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255),
+        email VARCHAR(255), 
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Insert data
+    await sql`
+      INSERT INTO connects (name, email, message) 
+      VALUES (${name}, ${email}, ${message})
+    `;
+
+    res.status(200).json({ message: 'Form submitted successfully!' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Database error: ' + error.message });
+  }
 }
