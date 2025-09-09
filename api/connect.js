@@ -1,4 +1,4 @@
-const { sql } = require('@vercel/postgres');
+const { neon } = require('@vercel/postgres');
 
 module.exports = async function handler(req, res) {
   // Handle CORS for frontend requests
@@ -19,6 +19,9 @@ module.exports = async function handler(req, res) {
   const { name, email, message } = req.body;
 
   try {
+    // Use neon() instead of sql for Neon databases
+    const sql = neon(process.env.DATABASE_URL);
+    
     // Create table if not exists
     await sql`
       CREATE TABLE IF NOT EXISTS connects (
