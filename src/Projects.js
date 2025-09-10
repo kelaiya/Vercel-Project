@@ -14,8 +14,8 @@ export default class Projects extends Component{
             controls: 1,
             },
         };
-    	var frontend = ["Elm", "React", "Redux", "React-Native", "Javascript (ES6)", "jQuery", "AJAX", "HTML5", "CSS3", "Flexbox"];
-    	var backend = ["Elixir", "Phoenix", "Ecto", "Node.js", "Sequelize", "SQL", "Express.js", "Java", "Ruby"];
+    	var frontend = ["React", "Redux", "Javascript", "Phoenix LiveView", "Elm", "React-Native", "jQuery", "AJAX", "HTML5", "CSS3", "Flexbox"];
+    	var backend = ["Node.js", "LiveView", "Elixir", "Phoenix", "Ecto", "Python", "Sequelize", "SQL", "Express.js", "Java", "Ruby"];
     	var other = ["Redis", "Auth0", "Mocha", "Chai", "Git", "Webpack", "Postman", "Command Line", "Xcode"];
 	   <iframe width="800" height="800" src="https://www.youtube.com/embed/iZTnL2dbpvU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 	    return (
